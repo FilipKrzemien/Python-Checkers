@@ -12,7 +12,8 @@ class Logic:
         self.board = [[Cl.Men([i, j], 'B') if (i < 3 and (i + j) % 2 == 1) else Cl.Men([i, j], 'C')
                     if (4 < i < 8 and (i + j) % 2 == 1) else Cl.Square([i, j]) if ((i + j) % 2 == 1)
                                                     else None for j in range(8)] for i in range(8)]
-
+        
+    # tests boards for teacher
     def test1(self):
         # Man at arms
         self.board = [[Cl.Men([i, j], 'B') if (i == 6 and j == 1) or (i == 1 and j == 2) else Cl.Men([i, j], 'C')
