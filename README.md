@@ -1,3 +1,3 @@
 # Python-Checkers
 university project 
-Yet to finish 
+Still need to upgrade it
