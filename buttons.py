@@ -1,7 +1,9 @@
 import tkinter as tk
-import Classes as Cl
+import men as men
+import king as king
+import square as sq
+from game_error_exception import GameErrorException
 import tkinter.messagebox
-from pygame import mixer
 import winsound
 # noinspection PyTypeChecker,PyUnusedLocal,PyDefaultArgument
 
@@ -35,23 +37,23 @@ class Buttons(tk.Frame):
     def draw(self):
         for i in range(8):
             for j in range(8):
-                if isinstance(self.__logic.board[i][j], Cl.Men) and self.__logic.board[i][j].player == 'C':
+                if isinstance(self.__logic.board[i][j], men.Men) and self.__logic.board[i][j].player == 'C':
                     self.__buttons[i][j] = tk.Button(self.__board_frame, height=4, width=10, bg="bisque", text='C',
                                                      command=lambda position=[i, j]: self.pawn_pressed(position))
                     self.__buttons[i][j].grid(row=i, column=j)
-                elif isinstance(self.__logic.board[i][j], Cl.King) and self.__logic.board[i][j].player == 'C':
+                elif isinstance(self.__logic.board[i][j], king.King) and self.__logic.board[i][j].player == 'C':
                     self.__buttons[i][j] = tk.Button(self.__board_frame, height=4, width=10, bg="bisque", text='Cd',
                                                      command=lambda position=[i, j]: self.pawn_pressed(position))
                     self.__buttons[i][j].grid(row=i, column=j)
-                elif isinstance(self.__logic.board[i][j], Cl.Men) and self.__logic.board[i][j].player == 'B':
+                elif isinstance(self.__logic.board[i][j], men.Men) and self.__logic.board[i][j].player == 'B':
                     self.__buttons[i][j] = tk.Button(self.__board_frame, height=4, width=10, bg="bisque", text='B',
                                                      command=lambda position=[i, j]: self.pawn_pressed(position))
                     self.__buttons[i][j].grid(row=i, column=j)
-                elif isinstance(self.__logic.board[i][j], Cl.King) and self.__logic.board[i][j].player == 'B':
+                elif isinstance(self.__logic.board[i][j], king.King) and self.__logic.board[i][j].player == 'B':
                     self.__buttons[i][j] = tk.Button(self.__board_frame, height=4, width=10, bg="bisque", text='Bd',
                                                      command=lambda position=[i, j]: self.pawn_pressed(position))
                     self.__buttons[i][j].grid(row=i, column=j)
-                elif isinstance(self.__logic.board[i][j], Cl.Square):
+                elif isinstance(self.__logic.board[i][j], sq.Square):
                     self.__buttons[i][j] = tk.Button(self.__board_frame, height=4, width=10, bg="bisque", text="",
                                                      command=lambda position=[i, j]: self.square_pressed(position))
                     self.__buttons[i][j].grid(row=i, column=j)
@@ -129,15 +131,15 @@ class Buttons(tk.Frame):
         if self.__Black_turn:
             try:
                 if self.__buttons[position[0]][position[1]].cget('text') == 'B' or self.__buttons[position[0]][position[1]].cget('text') == 'Bd':
-                    raise Cl.GameErrorException
-            except Cl.GameErrorException:
+                    raise GameErrorException
+            except GameErrorException:
                 tkinter.messagebox.showerror("ERROR!", 'ITS NOT YOUR PIECE!')
                 return
         elif not self.__Black_turn:
             try:
                 if self.__buttons[position[0]][position[1]].cget('text') == 'C' or self.__buttons[position[0]][position[1]].cget('text') == 'Cd':
-                    raise Cl.GameErrorException
-            except Cl.GameErrorException:
+                    raise GameErrorException
+            except GameErrorException:
                 tkinter.messagebox.showerror("ERROR!", 'ITS NOT YOUR PIECE!')
                 return
 
@@ -150,11 +152,11 @@ class Buttons(tk.Frame):
             position2 = self.__active
             if self.__Black_turn:
                 active_button_text = 'C'
-                if type(self.__logic.board[position2[0]][position2[1]]) == Cl.King:
+                if type(self.__logic.board[position2[0]][position2[1]]) == king.King:
                     active_button_text = 'Cd'
             elif not self.__Black_turn:
                 active_button_text = 'B'
-                if type(self.__logic.board[position2[0]][position2[1]]) == Cl.King:
+                if type(self.__logic.board[position2[0]][position2[1]]) == king.King:
                     active_button_text = 'Bd'
 
             self.__buttons[position2[0]][position2[1]].configure(text=active_button_text)
@@ -168,7 +170,7 @@ class Buttons(tk.Frame):
         if self.__active is None:
             pass
         else:
-            if type(self.__logic.board[position[0]][position[1]]) == Cl.Square:
+            if type(self.__logic.board[position[0]][position[1]]) == sq.Square:
                 if 0 <= position[1] <= 7:
                     if self.__logic.board[active_position[0]][active_position[1]].capture_available(position, blackturn, self.__logic, self):
                         self.swap_buttons(position, blackturn, active_position)
@@ -208,7 +210,7 @@ class Buttons(tk.Frame):
     def swap_buttons(self, position, blackturn, active_position):
         self.__logic.swap_position(position, active_position)
         if blackturn:
-            if type(self.__logic.board[position[0]][position[1]]) == Cl.King:
+            if type(self.__logic.board[position[0]][position[1]]) == king.King:
                 self.__buttons[position[0]][position[1]].config(height=4, width=10, bg="bisque", text='Cd',
                                                     command=lambda position=position: self.pawn_pressed(position))
 
@@ -233,7 +235,7 @@ class Buttons(tk.Frame):
                     self.__active = None
                     return
         else:
-            if type(self.__logic.board[position[0]][position[1]]) == Cl.King:
+            if type(self.__logic.board[position[0]][position[1]]) == king.King:
                 self.__buttons[position[0]][position[1]].config(height=4, width=10, bg="bisque", text='Bd',
                                                     command=lambda position=position: self.pawn_pressed(position))
                 self.__buttons[self.__active[0]][self.__active[1]].config(height=4, width=10, bg="bisque", text="",
@@ -262,7 +264,7 @@ class Buttons(tk.Frame):
                                     command=lambda position=[position[0], position[1]]: self.square_pressed(position))
 
     def game_end(self):
-        mixer.music.play()
+    # mixer.music.play()
         for i in range(8):
             for j in range(8):
                 self.__buttons[i][j].config(state='disabled')
@@ -291,6 +293,6 @@ class Buttons(tk.Frame):
         else:
             for i in range(8):
                 for j in range(8):
-                    if type(self.__logic.board[i][j]) == Cl.Men or type(self.__logic.board[i][j]) == Cl.King or type(
-                            self.__logic.board[i][j]) == Cl.Square:
+                    if type(self.__logic.board[i][j]) == men.Men or type(self.__logic.board[i][j]) == king.King or type(
+                            self.__logic.board[i][j]) == sq.Square:
                         self.__buttons[i][j].config(state='normal')
